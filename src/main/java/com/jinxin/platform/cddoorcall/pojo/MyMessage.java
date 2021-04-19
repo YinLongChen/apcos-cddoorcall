@@ -1,4 +1,4 @@
-package com.jinxin.platform.cddoorcall;
+package com.jinxin.platform.cddoorcall.pojo;
 
 import lombok.Data;
 

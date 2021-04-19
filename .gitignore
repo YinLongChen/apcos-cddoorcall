@@ -8,7 +8,7 @@
 
 cd existing_repo
 git remote rename origin old-origin
-git remote add origin git@192.168.60.202:bruce/apcos-watermeter.git
+git remote add origin git@192.168.60.202:bruce/apcos-cddoorcall.git
 git push -u origin --all
 git push -u origin --tags
 
