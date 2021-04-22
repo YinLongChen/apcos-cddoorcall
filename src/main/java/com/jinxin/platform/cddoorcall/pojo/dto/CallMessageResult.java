@@ -9,7 +9,7 @@ import lombok.Data;
  **/
 @Data
 public class CallMessageResult {
-    //101-心跳包,200-正常数据包，400-错误
+    //101-心跳包,200-门禁机呼叫，300-app挂断,301-门禁机挂断,400-错误
     private Integer status;
     //提示信息
     private String message;
