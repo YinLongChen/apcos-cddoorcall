@@ -7,6 +7,9 @@ mybatis:
   typeAliasesPackage: com.jinxin.platform.**.domain #待实现通配符方式
   mapper-locations: classpath*:**/xml/*Mapper.xml
 
+platform:
+  upload: D:\testdata
+
 spring:
   http:
     encoding:

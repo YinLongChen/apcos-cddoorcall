@@ -17,7 +17,7 @@
     //判断当前浏览器是否支持WebSocket, 主要此处要更换为自己的地址
     if ('WebSocket' in window) {
         let userId = Math.round(Math.random() * 100)+1;
-        websocket = new WebSocket("ws://192.168.60.40:10139/doorCall/message/" + userId);
+        websocket = new WebSocket("ws://192.168.60.32:10139/doorCall/message/" + userId);
     } else {
         alert('Not support websocket')
     }

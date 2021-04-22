@@ -8,15 +8,26 @@ import com.jinxin.platform.cddoorcall.pojo.dto.CallMessageResult;
  * desc:
  **/
 public class CallMessageUtil {
-    private static CallMessageResult callMessageResult = new CallMessageResult();
+    private static CallMessageResult beatMessage = new CallMessageResult();
+    private static CallMessageResult messageResult = new CallMessageResult();
 
     public static CallMessageResult getBeatData() {
-        if (callMessageResult == null) {
-            callMessageResult = new CallMessageResult();
+        if (beatMessage == null) {
+            beatMessage = new CallMessageResult();
         }
-        callMessageResult.setStatus(101);
-        callMessageResult.setMessage("心跳信息");
-        callMessageResult.setData(null);
-        return callMessageResult;
+        beatMessage.setStatus(101);
+        beatMessage.setMessage("心跳信息");
+        beatMessage.setData(null);
+        return beatMessage;
+    }
+
+    public static CallMessageResult getMessageData() {
+        if (messageResult == null) {
+            messageResult = new CallMessageResult();
+        }
+        messageResult.setStatus(200);
+        messageResult.setMessage("呼叫信息");
+        messageResult.setData(null);
+        return messageResult;
     }
 }

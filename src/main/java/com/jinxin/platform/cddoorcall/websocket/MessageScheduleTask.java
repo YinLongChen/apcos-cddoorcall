@@ -1,6 +1,8 @@
 package com.jinxin.platform.cddoorcall.websocket;
 
 import com.alibaba.fastjson.JSON;
+import com.jinxin.platform.cddoorcall.pojo.dto.CallMessageDto;
+import com.jinxin.platform.cddoorcall.pojo.dto.CallMessageResult;
 import com.jinxin.platform.cddoorcall.utils.CallMessageUtil;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -22,6 +24,15 @@ public class MessageScheduleTask {
 
     @Scheduled(cron = "0/30 * * * * ?")
     private void configureTasks() {
-        webSocketServer.sendMessage(JSON.toJSONString(CallMessageUtil.getBeatData()), null);
+        webSocketServer.sendMessage(null, JSON.toJSONString(CallMessageUtil.getBeatData()), null);
+        //
+        CallMessageResult messageData = CallMessageUtil.getMessageData();
+        CallMessageDto callMessageDto = new CallMessageDto();
+        callMessageDto.setIp("192.168.60.32");
+        callMessageDto.setAccount("admin");
+        callMessageDto.setPassword("123456");
+        callMessageDto.setPhone("110");
+        messageData.setData(callMessageDto);
+        webSocketServer.sendMessage(null, JSON.toJSONString(messageData), null);
     }
 }

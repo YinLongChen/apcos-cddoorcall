@@ -25,7 +25,7 @@ public class MessageWebSocket {
 
     @OnOpen
     public void onOpen(@PathParam("userId") String userId, Session session) {
-        clients.put(session.getId(), session);
+        clients.put(userId, session);
         /*
          * 存放所有在线的客户端
          */
@@ -37,7 +37,7 @@ public class MessageWebSocket {
      */
     @OnClose
     public void onClose(@PathParam("userId") String userId, Session session) {
-        clients.remove(session.getId());
+        clients.remove(userId);
         log.info("onClose,{}", userId);
     }
 
@@ -47,14 +47,14 @@ public class MessageWebSocket {
      * @param message 客户端发送过来的消息
      */
     @OnMessage
-    public void onMessage(String message, Session session) {
-        this.sendMessage(message, session);
-        log.info("message,{}", session.getId());
+    public void onMessage(@PathParam("userId") String userId, String message, Session session) {
+        this.sendMessage(userId, message, session);
+        log.info("{}发送信息,内容为{}", userId, message);
     }
 
     @OnError
-    public void onError(Session session, Throwable error) {
-        log.error("发生错误,{}", error.getMessage());
+    public void onError(@PathParam("userId") String userId, Session session, Throwable error) {
+        log.error("发生错误,{}", userId);
         error.printStackTrace();
     }
 
@@ -63,11 +63,19 @@ public class MessageWebSocket {
      *
      * @param message 消息内容
      */
-    public void sendMessage(String message, Session fromSession) {
+    public void sendMessage(String userId, String message, Session fromSession) {
         for (Map.Entry<String, Session> sessionEntry : clients.entrySet()) {
             Session toSession = sessionEntry.getValue();
-            log.info("服务端给客户端[{}]发送消息{},", toSession.getId(), message);
-            toSession.getAsyncRemote().sendText(message);
+            log.info("服务端给客户端[{}]发送消息{},", userId, message);
+            if (toSession.isOpen()) {
+                toSession.getAsyncRemote().sendText(message);
+            }
         }
+    }
+
+    public void sendMessageToUser(String userId, String message, Session fromSession) {
+        Session toSession = clients.get(userId);
+        log.info("sendMessageToUser[{}]发送消息{},", userId, message);
+        toSession.getAsyncRemote().sendText(message);
     }
 }
