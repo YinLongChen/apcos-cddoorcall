@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jinxin.platform.cddoorcall.mapper.CddoorcallCallInfoMapper">
+
+    <resultMap type="com.jinxin.platform.cddoorcall.pojo.domains.CddoorcallCallInfo" id="CddoorcallCallInfoMap">
+        <result property="id" column="ID" jdbcType="VARCHAR"/>
+        <result property="userId" column="USER_ID" jdbcType="VARCHAR"/>
+        <result property="community" column="COMMUNITY" jdbcType="VARCHAR"/>
+        <result property="floor" column="FLOOR" jdbcType="VARCHAR"/>
+        <result property="roomNum" column="ROOM_NUM" jdbcType="VARCHAR"/>
+        <result property="mac" column="MAC" jdbcType="VARCHAR"/>
+        <result property="callTime" column="CALL_TIME" jdbcType="TIMESTAMP"/>
+        <result property="hangUpTime" column="HANG_UP_TIME" jdbcType="TIMESTAMP"/>
+        <result property="status" column="STATUS" jdbcType="VARCHAR"/>
+        <result property="account" column="ACCOUNT" jdbcType="VARCHAR"/>
+        <result property="productCode" column="PRODUCT_CODE" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="CddoorcallCallInfoMap">
+        select
+          ID, USER_ID, COMMUNITY, FLOOR, ROOM_NUM, MAC, CALL_TIME, HANG_UP_TIME, STATUS, ACCOUNT, PRODUCT_CODE
+        from CDDOORCALL_CALL_INFO
+        where ID = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="CddoorcallCallInfoMap">
+        select
+          ID, USER_ID, COMMUNITY, FLOOR, ROOM_NUM, MAC, CALL_TIME, HANG_UP_TIME, STATUS, ACCOUNT, PRODUCT_CODE
+        from CDDOORCALL_CALL_INFO
+        
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="CddoorcallCallInfoMap">
+        select
+        ID, USER_ID, COMMUNITY, FLOOR, ROOM_NUM, MAC, CALL_TIME, HANG_UP_TIME, STATUS, ACCOUNT, PRODUCT_CODE
+        from CDDOORCALL_CALL_INFO
+        <where>
+            <if test="id != null and id != ''">
+                and ID = #{id}
+            </if>
+            <if test="userId != null and userId != ''">
+                and USER_ID = #{userId}
+            </if>
+            <if test="community != null and community != ''">
+                and COMMUNITY = #{community}
+            </if>
+            <if test="floor != null and floor != ''">
+                and FLOOR = #{floor}
+            </if>
+            <if test="roomNum != null and roomNum != ''">
+                and ROOM_NUM = #{roomNum}
+            </if>
+            <if test="mac != null and mac != ''">
+                and MAC = #{mac}
+            </if>
+            <if test="callTime != null">
+                and CALL_TIME = #{callTime}
+            </if>
+            <if test="hangUpTime != null">
+                and HANG_UP_TIME = #{hangUpTime}
+            </if>
+            <if test="status != null and status != ''">
+                and STATUS = #{status}
+            </if>
+            <if test="account != null and account != ''">
+                and ACCOUNT = #{account}
+            </if>
+            <if test="productCode != null and productCode != ''">
+                and PRODUCT_CODE = #{productCode}
+            </if>
+        </where>
+        ORDER BY ID DESC
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.String">
+            select SYS_GUID() as id from DUAL
+        </selectKey>
+        insert into CDDOORCALL_CALL_INFO(ID, USER_ID, COMMUNITY, FLOOR, ROOM_NUM, MAC, CALL_TIME, HANG_UP_TIME, STATUS,
+        ACCOUNT, PRODUCT_CODE)
+        values (#{id,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{community,jdbcType=VARCHAR},
+        #{floor,jdbcType=VARCHAR}, #{roomNum,jdbcType=VARCHAR}, #{mac,jdbcType=VARCHAR}, #{callTime,jdbcType=TIMESTAMP},
+        #{hangUpTime,jdbcType=TIMESTAMP}, #{status,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR},
+        #{productCode,jdbcType=VARCHAR})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update CDDOORCALL_CALL_INFO
+        <set>
+            <if test="userId != null and userId != ''">
+                USER_ID = #{userId,jdbcType=VARCHAR},
+            </if>
+            <if test="community != null and community != ''">
+                COMMUNITY = #{community,jdbcType=VARCHAR},
+            </if>
+            <if test="floor != null and floor != ''">
+                FLOOR = #{floor,jdbcType=VARCHAR},
+            </if>
+            <if test="roomNum != null and roomNum != ''">
+                ROOM_NUM = #{roomNum,jdbcType=VARCHAR},
+            </if>
+            <if test="mac != null and mac != ''">
+                MAC = #{mac,jdbcType=VARCHAR},
+            </if>
+            <if test="callTime != null">
+                CALL_TIME = #{callTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="hangUpTime != null">
+                HANG_UP_TIME = #{hangUpTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null and status != ''">
+                STATUS = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="account != null and account != ''">
+                ACCOUNT = #{account,jdbcType=VARCHAR},
+            </if>
+            <if test="productCode != null and productCode != ''">
+                PRODUCT_CODE = #{productCode,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where ID = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from CDDOORCALL_CALL_INFO where ID = #{id}
+    </delete>
+
+</mapper>

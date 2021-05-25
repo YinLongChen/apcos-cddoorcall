@@ -1,13 +1,23 @@
 package com.jinxin.platform.cddoorcall.websocket;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.jinxin.platform.cddoorcall.pojo.domains.CddoorcallCallInfo;
+import com.jinxin.platform.cddoorcall.pojo.dto.CallMessageResult;
+import com.jinxin.platform.cddoorcall.rpc.DoorCallRpcService;
+import com.jinxin.platform.cddoorcall.service.CddoorcallCallInfoService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static com.jinxin.platform.cddoorcall.utils.URLEncoder.encodeURIComponent;
 
 /**
  * Date: 2021-04-19
@@ -23,6 +33,12 @@ public class MessageWebSocket {
      */
     private static final Map<String, Session> clients = new ConcurrentHashMap<>();
 
+    @Autowired
+    private CddoorcallCallInfoService cddoorcallCallInfoService;
+
+    @Autowired
+    private DoorCallRpcService doorCallRpcService;
+
     @OnOpen
     public void onOpen(@PathParam("userId") String userId, Session session) {
         clients.put(userId, session);
@@ -37,8 +53,21 @@ public class MessageWebSocket {
      */
     @OnClose
     public void onClose(@PathParam("userId") String userId, Session session) {
+        //更新通话记录
+        updateCallInfo(userId,"3");
         clients.remove(userId);
         log.info("onClose,{}", userId);
+    }
+
+    public void updateCallInfo(String userId,String stauts){
+        CddoorcallCallInfo cddoorcallCallInfo = cddoorcallCallInfoService.queryByUserId(userId);
+        if (cddoorcallCallInfo != null){
+            if (cddoorcallCallInfo.getStatus().equals("1")){
+                cddoorcallCallInfo.setHangUpTime(LocalDateTime.now());
+                cddoorcallCallInfo.setStatus(stauts);
+                cddoorcallCallInfoService.update(cddoorcallCallInfo);
+            }
+        }
     }
 
     /**
@@ -48,12 +77,29 @@ public class MessageWebSocket {
      */
     @OnMessage
     public void onMessage(@PathParam("userId") String userId, String message, Session session) {
-        this.sendMessage(userId, message, session);
+        //挂断
+        CallMessageResult callMessageResult = JSON.toJavaObject(JSONObject.parseObject(message),CallMessageResult.class);
+        if (callMessageResult.getStatus()==300){
+            JSONObject params = new JSONObject();
+            JSONObject accountInfo = new JSONObject();
+            CddoorcallCallInfo cddoorcallCallInfo = cddoorcallCallInfoService.queryByUserId(userId);
+            accountInfo.put("mac",cddoorcallCallInfo.getMac());
+            accountInfo.put("productCode",cddoorcallCallInfo.getProductCode());
+            accountInfo.put("account",cddoorcallCallInfo.getAccount());
+            params.put("p1","0");
+            String operation = "CallState";
+            String controlParams = encodeURIComponent(params.toJSONString());
+            doorCallRpcService.controlDevice(accountInfo,controlParams,operation);
+            updateCallInfo(userId,"2");
+
+        }
         log.info("{}发送信息,内容为{}", userId, message);
     }
 
     @OnError
     public void onError(@PathParam("userId") String userId, Session session, Throwable error) {
+        //更新通话记录
+        updateCallInfo(userId,"3");
         log.error("发生错误,{}", userId);
         error.printStackTrace();
     }
@@ -73,7 +119,7 @@ public class MessageWebSocket {
         }
     }
 
-    public void sendMessageToUser(String userId, String message, Session fromSession) {
+    public void sendMessageToUser(String userId, String message) {
         Session toSession = clients.get(userId);
         log.info("sendMessageToUser[{}]发送消息{},", userId, message);
         toSession.getAsyncRemote().sendText(message);

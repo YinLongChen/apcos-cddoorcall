@@ -1,6 +1,5 @@
 package com.jinxin.platform.cddoorcall.pojo.dto;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
@@ -13,13 +12,17 @@ public class UserDto {
     /**
      * 用户ID
      */
-    @ApiModelProperty(value = "用户ID")
     private String userId;
     /**
      * 用户姓名
      */
-    @ApiModelProperty(value = "用户姓名")
     private String userName;
+
+    private String id;
+
+    private String phone;
+
+    private String name;
 
     public UserDto() {
     }

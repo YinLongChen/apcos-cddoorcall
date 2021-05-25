@@ -25,14 +25,5 @@ public class MessageScheduleTask {
     @Scheduled(cron = "0/30 * * * * ?")
     private void configureTasks() {
         webSocketServer.sendMessage(null, JSON.toJSONString(CallMessageUtil.getBeatData()), null);
-        //
-        CallMessageResult messageData = CallMessageUtil.getMessageData();
-        CallMessageDto callMessageDto = new CallMessageDto();
-        callMessageDto.setIp("192.168.60.32");
-        callMessageDto.setAccount("admin");
-        callMessageDto.setPassword("123456");
-        callMessageDto.setPhone("110");
-        messageData.setData(callMessageDto);
-        webSocketServer.sendMessage(null, JSON.toJSONString(messageData), null);
     }
 }
